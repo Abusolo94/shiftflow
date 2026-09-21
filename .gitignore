@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+node_modules
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Firebase Admin credentials
+firebase-service-account.json
+config/firebase-service-account.json
+src/config/firebase-service-account.json
+*service-account*.json
+*serviceAccount*.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build
+dist/
+dist-ssr/
+build/
+
+# Vercel
+.vercel/
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
