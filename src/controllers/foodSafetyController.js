@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 
 import Store from "../models/Store.js";
-import FoodSafety from "../models/foodsafety.js";
+import FoodSafety from "../models/FoodSafety.js";
 
 // ======================================================
 // HELPERS
