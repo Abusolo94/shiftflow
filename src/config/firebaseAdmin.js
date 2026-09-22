@@ -208,10 +208,11 @@ if (isVercel) {
    * and values accidentally surrounded by quotes.
    */
   privateKey = privateKey
-    .trim()
-    .replace(/^["']|["']$/g, "")
-    .replace(/\\n/g, "\n")
-    .trim();
+  ?.trim()
+  .replace(/^["']|["']$/g, "")
+  .replace(/\\\\n/g, "\n")
+  .replace(/\\n/g, "\n")
+  .trim();
 
   firebaseCredentials = {
     projectId,
