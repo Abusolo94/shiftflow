@@ -268,6 +268,7 @@ import adminAccountRoutes from "./routes/adminAccountRoutes.js";
 import adminSetupRoutes from "./routes/adminSetupRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
+import  reviewRoutes from "./routes/reviewRoutes.js";
 
 const app = express();
 
@@ -532,6 +533,11 @@ app.use(
 app.use(
   "/api/settings",
   settingsRoutes
+);
+
+app.use(
+  "/api/reviews",
+  reviewRoutes
 );
 
 // ======================================================
