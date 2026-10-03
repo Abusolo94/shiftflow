@@ -798,7 +798,7 @@ export const updateShift =
 
       const allowedFields = [
         "title",
-        "shiftDate",
+        "businessDate",
         "startTime",
         "endTime",
         "shiftType",
