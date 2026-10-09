@@ -1,11 +1,331 @@
+// import mongoose from "mongoose";
+
+// const checklistTaskSchema = new mongoose.Schema(
+//   {
+//     task: {
+//       type: String,
+//       trim: true,
+//       required: true,
+//     },
+
+//     completed: {
+//       type: Boolean,
+//       default: false,
+//     },
+//   },
+//   { _id: false }
+// );
+
+// const checklistSectionSchema = new mongoose.Schema(
+//   {
+//     area: {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+
+//     tasks: {
+//       type: [checklistTaskSchema],
+//       default: [],
+//     },
+//   },
+//   { _id: false }
+// );
+
+// const checklistGroupSchema = new mongoose.Schema(
+//   {
+//     title: {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+
+//     sections: {
+//       type: [checklistSectionSchema],
+//       default: [],
+//     },
+//   },
+//   { _id: false }
+// );
+
+// const shiftSchema = new mongoose.Schema(
+//   {
+//     // =========================
+//     // STORE
+//     // =========================
+
+//     storeId: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "Store",
+//       required: true,
+//       index: true,
+//     },
+
+//     storeNumber: {
+//       type: String,
+//       required: true,
+//       trim: true,
+//       index: true,
+//     },
+
+//     storeName: {
+//       type: String,
+//       required: true,
+//       trim: true,
+//     },
+
+//     // =========================
+//     // SHIFT INFORMATION
+//     // =========================
+
+//     title: {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+
+//     shiftDate: {
+//       type: Date,
+//       required: true,
+//     },
+
+//     startTime: {
+//       type: String,
+//       required: true,
+//       trim: true,
+//     },
+
+//     endTime: {
+//       type: String,
+//       required: true,
+//       trim: true,
+//     },
+
+//     shiftType: {
+//       type: String,
+//       trim: true,
+//       default: "Regular",
+//     },
+
+//     // =========================
+//     // MANAGER
+//     // =========================
+
+//     managerName: {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+
+//     managerUid: {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+
+//     managerComment: {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+
+//     // =========================
+//     // CHECKLIST
+//     // =========================
+
+//     checklist: {
+//       type: [checklistGroupSchema],
+//       default: [],
+//     },
+
+//     // =========================
+//     // TASK PROGRESS
+//     // =========================
+
+//     tasks: {
+//       type: Map,
+//       of: Boolean,
+//       default: {},
+//     },
+
+//     completedTasks: {
+//       type: Number,
+//       default: 0,
+//     },
+
+//     totalTasks: {
+//       type: Number,
+//       default: 0,
+//     },
+
+//     score: {
+//       type: Number,
+//       default: 0,
+//     },
+
+//     // =========================
+//     // ISSUES / HANDOVER
+//     // =========================
+
+//     issues: {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+
+//     handover: {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+
+//     notes: {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+
+//     // =========================
+//     // STATUS
+//     // =========================
+
+//     status: {
+//       type: String,
+//       enum: [
+//         "Draft",
+//         "Pending",
+//         "Approved",
+//         "Rejected",
+//         "In Progress",
+//         "Completed",
+//         "Cancelled",
+//       ],
+//       default: "Draft",
+//       index: true,
+//     },
+
+//     // =========================
+//     // CREATOR
+//     // =========================
+
+//     createdByUid: {
+//       type: String,
+//       required: true,
+//       index: true,
+//     },
+
+//     createdBy: {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+
+//     createdByName: {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+
+//     createdByEmail: {
+//       type: String,
+//       trim: true,
+//       lowercase: true,
+//       default: "",
+//     },
+
+//     // =========================
+//     // APPROVAL
+//     // =========================
+
+//     approvedByUid: {
+//       type: String,
+//       default: "",
+//     },
+
+//     approvedByName: {
+//       type: String,
+//       default: "",
+//     },
+
+//     approvedAt: {
+//       type: Date,
+//       default: null,
+//     },
+
+//     // =========================
+//     // COMPLETION / VERIFICATION
+//     // =========================
+
+//     verified: {
+//       type: Boolean,
+//       default: false,
+//     },
+
+//     completedAt: {
+//       type: Date,
+//       default: null,
+//     },
+//   },
+//   {
+//     timestamps: true,
+//   }
+// );
+
+// const Shift = mongoose.model("Shift", shiftSchema);
+
+// export default Shift;
+
+
+
+
 import mongoose from "mongoose";
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const cleanString = (value) =>
+  typeof value === "string" ? value.trim() : "";
+
+const getTaskLabel = (item) => {
+  if (typeof item === "string") {
+    return item.trim();
+  }
+
+  if (!item || typeof item !== "object") {
+    return "";
+  }
+
+  return cleanString(
+    item.task ||
+    item.title ||
+    item.label ||
+    item.name
+  );
+};
+
+/* =========================================================
+   CHECKLIST TASK SCHEMA
+========================================================= */
 
 const checklistTaskSchema = new mongoose.Schema(
   {
-    task: {
+    id: {
       type: String,
       trim: true,
-      required: true,
+      default: "",
+    },
+
+    task: {
+      type: String,
+      required: [true, "Checklist task description is required."],
+      trim: true,
+    },
+
+    title: {
+      type: String,
+      trim: true,
+      default: "",
     },
 
     completed: {
@@ -13,8 +333,14 @@ const checklistTaskSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { _id: false }
+  {
+    _id: false,
+  }
 );
+
+/* =========================================================
+   CHECKLIST SECTION SCHEMA
+========================================================= */
 
 const checklistSectionSchema = new mongoose.Schema(
   {
@@ -29,8 +355,14 @@ const checklistSectionSchema = new mongoose.Schema(
       default: [],
     },
   },
-  { _id: false }
+  {
+    _id: false,
+  }
 );
+
+/* =========================================================
+   CHECKLIST GROUP SCHEMA
+========================================================= */
 
 const checklistGroupSchema = new mongoose.Schema(
   {
@@ -45,38 +377,155 @@ const checklistGroupSchema = new mongoose.Schema(
       default: [],
     },
   },
-  { _id: false }
+  {
+    _id: false,
+  }
 );
+
+/* =========================================================
+   NORMALIZE CHECKLIST DATA
+
+   Accepts:
+   - task
+   - title
+   - label
+   - name
+   - string tasks
+
+   Always stores:
+   - id
+   - task
+   - title
+   - completed
+========================================================= */
+
+const normalizeChecklist = (checklist) => {
+  if (!Array.isArray(checklist)) {
+    return [];
+  }
+
+  return checklist.map((group, groupIndex) => ({
+    title: cleanString(
+      group?.title ||
+      group?.name ||
+      `Checklist ${groupIndex + 1}`
+    ),
+
+    sections: Array.isArray(group?.sections)
+      ? group.sections.map((section, sectionIndex) => ({
+          area: cleanString(
+            section?.area ||
+            section?.title ||
+            section?.name ||
+            `Section ${sectionIndex + 1}`
+          ),
+
+          tasks: Array.isArray(section?.tasks)
+            ? section.tasks.map((item, taskIndex) => {
+                const label = getTaskLabel(item);
+
+                const id =
+                  typeof item === "object" && item !== null
+                    ? item.id || item.taskId
+                    : null;
+
+                return {
+                  id: String(
+                    id ??
+                    `${groupIndex}-${sectionIndex}-${taskIndex}`
+                  ),
+
+                  task: label,
+                  title: label,
+
+                  completed:
+                    typeof item === "object" &&
+                    item !== null &&
+                    item.completed === true,
+                };
+              })
+            : [],
+        }))
+      : [],
+  }));
+};
+
+/* =========================================================
+   CALCULATE CHECKLIST PROGRESS
+========================================================= */
+
+const calculateChecklistProgress = (checklist = []) => {
+  let totalTasks = 0;
+  let completedTasks = 0;
+
+  if (!Array.isArray(checklist)) {
+    return {
+      totalTasks: 0,
+      completedTasks: 0,
+      score: 0,
+    };
+  }
+
+  checklist.forEach((group) => {
+    if (!Array.isArray(group?.sections)) return;
+
+    group.sections.forEach((section) => {
+      if (!Array.isArray(section?.tasks)) return;
+
+      section.tasks.forEach((task) => {
+        totalTasks += 1;
+
+        if (task?.completed === true) {
+          completedTasks += 1;
+        }
+      });
+    });
+  });
+
+  const score = totalTasks
+    ? Math.round((completedTasks / totalTasks) * 100)
+    : 0;
+
+  return {
+    totalTasks,
+    completedTasks,
+    score,
+  };
+};
+
+/* =========================================================
+   SHIFT SCHEMA
+========================================================= */
 
 const shiftSchema = new mongoose.Schema(
   {
-    // =========================
-    // STORE
-    // =========================
+    /* =====================================================
+       STORE INFORMATION
+    ===================================================== */
 
     storeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
-      required: true,
+      required: [true, "Store ID is required."],
       index: true,
     },
 
     storeNumber: {
       type: String,
-      required: true,
+      required: [true, "Store number is required."],
       trim: true,
       index: true,
     },
 
     storeName: {
       type: String,
-      required: true,
+      required: [true, "Store name is required."],
       trim: true,
     },
 
-    // =========================
-    // SHIFT INFORMATION
-    // =========================
+    /* =====================================================
+       SHIFT INFORMATION
+    ===================================================== */
 
     title: {
       type: String,
@@ -86,18 +535,18 @@ const shiftSchema = new mongoose.Schema(
 
     shiftDate: {
       type: Date,
-      required: true,
+      required: [true, "Shift business date is required."],
     },
 
     startTime: {
       type: String,
-      required: true,
+      required: [true, "Start time is required."],
       trim: true,
     },
 
     endTime: {
       type: String,
-      required: true,
+      required: [true, "End time is required."],
       trim: true,
     },
 
@@ -107,9 +556,9 @@ const shiftSchema = new mongoose.Schema(
       default: "Regular",
     },
 
-    // =========================
-    // MANAGER
-    // =========================
+    /* =====================================================
+       MANAGER
+    ===================================================== */
 
     managerName: {
       type: String,
@@ -129,18 +578,24 @@ const shiftSchema = new mongoose.Schema(
       default: "",
     },
 
-    // =========================
-    // CHECKLIST
-    // =========================
+    /* =====================================================
+       CHECKLIST
+    ===================================================== */
 
     checklist: {
       type: [checklistGroupSchema],
       default: [],
     },
 
-    // =========================
-    // TASK PROGRESS
-    // =========================
+    /* =====================================================
+       LEGACY TASK STATE
+
+       Example:
+       {
+         "0-0-0": true,
+         "0-0-1": false
+       }
+    ===================================================== */
 
     tasks: {
       type: Map,
@@ -148,24 +603,32 @@ const shiftSchema = new mongoose.Schema(
       default: {},
     },
 
+    /* =====================================================
+       CHECKLIST PROGRESS
+    ===================================================== */
+
     completedTasks: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     totalTasks: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     score: {
       type: Number,
       default: 0,
+      min: 0,
+      max: 100,
     },
 
-    // =========================
-    // ISSUES / HANDOVER
-    // =========================
+    /* =====================================================
+       ISSUES / HANDOVER
+    ===================================================== */
 
     issues: {
       type: String,
@@ -185,9 +648,9 @@ const shiftSchema = new mongoose.Schema(
       default: "",
     },
 
-    // =========================
-    // STATUS
-    // =========================
+    /* =====================================================
+       STATUS
+    ===================================================== */
 
     status: {
       type: String,
@@ -204,13 +667,13 @@ const shiftSchema = new mongoose.Schema(
       index: true,
     },
 
-    // =========================
-    // CREATOR
-    // =========================
+    /* =====================================================
+       CREATOR
+    ===================================================== */
 
     createdByUid: {
       type: String,
-      required: true,
+      required: [true, "Creator UID is required."],
       index: true,
     },
 
@@ -233,9 +696,9 @@ const shiftSchema = new mongoose.Schema(
       default: "",
     },
 
-    // =========================
-    // APPROVAL
-    // =========================
+    /* =====================================================
+       APPROVAL
+    ===================================================== */
 
     approvedByUid: {
       type: String,
@@ -252,9 +715,9 @@ const shiftSchema = new mongoose.Schema(
       default: null,
     },
 
-    // =========================
-    // COMPLETION / VERIFICATION
-    // =========================
+    /* =====================================================
+       COMPLETION / VERIFICATION
+    ===================================================== */
 
     verified: {
       type: Boolean,
@@ -271,6 +734,94 @@ const shiftSchema = new mongoose.Schema(
   }
 );
 
-const Shift = mongoose.model("Shift", shiftSchema);
+/* =========================================================
+   AUTOMATIC CHECKLIST NORMALIZATION
+
+   Runs when assigning checklist through create/save.
+========================================================= */
+
+shiftSchema.path("checklist").set(function (value) {
+  return normalizeChecklist(value);
+});
+
+/* =========================================================
+   AUTO CALCULATE CHECKLIST PROGRESS
+
+   Runs before document validation and save.
+========================================================= */
+
+shiftSchema.pre("validate", function (next) {
+  try {
+    if (this.isNew || this.isModified("checklist")) {
+      const progress = calculateChecklistProgress(
+        this.checklist
+      );
+
+      this.totalTasks = progress.totalTasks;
+      this.completedTasks = progress.completedTasks;
+      this.score = progress.score;
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+/* =========================================================
+   INDEXES
+========================================================= */
+
+shiftSchema.index({
+  storeId: 1,
+  shiftDate: -1,
+});
+
+shiftSchema.index({
+  storeNumber: 1,
+  createdAt: -1,
+});
+
+shiftSchema.index({
+  status: 1,
+  createdAt: -1,
+});
+
+/* =========================================================
+   VIRTUALS
+========================================================= */
+
+shiftSchema.virtual("completionPercentage").get(function () {
+  return this.score || 0;
+});
+
+shiftSchema.virtual("checklistScore").get(function () {
+  return this.score || 0;
+});
+
+/* =========================================================
+   JSON TRANSFORMATION
+========================================================= */
+
+shiftSchema.set("toJSON", {
+  virtuals: true,
+  transform: (doc, ret) => {
+    ret.id = String(ret._id);
+
+    if (ret.tasks instanceof Map) {
+      ret.tasks = Object.fromEntries(ret.tasks);
+    }
+
+    return ret;
+  },
+});
+
+/* =========================================================
+   MODEL
+========================================================= */
+
+const Shift =
+  mongoose.models.Shift ||
+  mongoose.model("Shift", shiftSchema);
 
 export default Shift;
